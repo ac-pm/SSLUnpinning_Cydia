@@ -3,6 +3,7 @@ package acpm.com.sslunpinning;
 import java.net.Socket;
 
 import android.os.Environment;
+import android.util.Log;
 
 import com.saurik.substrate.MS;
 
@@ -43,6 +44,7 @@ public class Hook {
                         try {
                             method = resources.getMethod(methodName,
                                     javax.net.ssl.SSLSocketFactory.class);
+                            Log.i("METHOD NAME: ",method.getName());
                         } catch (NoSuchMethodException e) {
                             method = null;
                         }
@@ -75,6 +77,7 @@ public class Hook {
                         Method method;
                         try {
                             method = resources.getMethod(methodName);
+                            Log.i("METHOD NAME: ",method.getName());
                         } catch (NoSuchMethodException e) {
                             method = null;
                         }
@@ -105,6 +108,7 @@ public class Hook {
                         try {
                             method = resources.getMethod(methodName,
                                     KeyManager[].class, TrustManager[].class, SecureRandom.class);
+                            Log.i("METHOD NAME: ",method.getName());
                         } catch (NoSuchMethodException e) {
                             method = null;
                         }
@@ -127,12 +131,13 @@ public class Hook {
                 });
 
         // HttpsURLConnection.setDefaultHostnameVerifier >> SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
-        MS.hookClassLoad("javax.net.ssl.HttpsURLConnection",
+        MS.hookClassLoad("org.apache.http.conn.ssl.HttpsURLConnection",
                 new MS.ClassLoadHook() {
                     public void classLoaded(Class<?> resources) {
                         Method method;
                         try {
                             method = resources.getMethod("setDefaultHostnameVerifier", HostnameVerifier.class);
+                            Log.i("METHOD NAME: ",method.getName());
                         } catch (NoSuchMethodException e) {
                             method = null;
                         }
@@ -162,15 +167,20 @@ public class Hook {
         Class<?>[] params = new Class<?>[]{};
         Method pMethod = null;
 
+
         try {
             pMethod = resources.getMethod(methodName, params);
+            Log.i("METHOD NAME: ",pMethod.getName());
         } catch (Exception e) {
             pMethod = null;
         }
 
         if (pMethod != null) {
             final MS.MethodPointer old = new MS.MethodPointer();
+
+
             MS.hookMethod(resources, pMethod, new MS.MethodHook() {
+
                 public Object invoked(Object resources, Object... args) throws Throwable {
                     String packageName = (String) old.invoke(resources, args);
                     if (!packageName.equals("android")) {
