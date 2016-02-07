@@ -1,3 +1,6 @@
+Deprecated - I recommend using the Xposed version - https://github.com/ac-pm/SSLUnpinning_Xposed
+------------
+
 SSLUnpinning
 ========
 
